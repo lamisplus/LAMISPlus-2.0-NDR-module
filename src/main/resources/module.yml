@@ -1,0 +1,16 @@
+basePackage: org.lamisplus.modules.ndr
+name: NDRModule
+dependencies: {PatientModule: 1.0.0, TriageModule: 1.0.0 }
+store: true
+menus:
+  - icon:
+    disabled: false
+    name: NDR
+    state: ndr
+    url: /across/resources/static/ndr/index.html
+umdLocation: /across/resources/static/ndr/index.html
+webModules:
+  - breadcrumb: NDR
+    name: NDRModule
+    path: NDR
+    position: 99
