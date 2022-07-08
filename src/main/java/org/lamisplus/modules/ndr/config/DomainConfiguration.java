@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         transactionManagerRef = "ndrTransactionManger",
         basePackages = "org.lamisplus.modules.ndr.repositories"
-
 )
 @EnableTransactionManagement
 public class DomainConfiguration {

@@ -53,6 +53,7 @@ import java.math.BigDecimal;
     "messageUniqueID",
     "messageSendingOrganization"
 })
+@XmlRootElement
 public class MessageHeaderType {
 
     @XmlElement(name = "MessageStatusCode", required = true)

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="autoIncrement" value="true"/>
+    <changeSet id="20200405133945-01" author="amos-data-fi">
+        <createTable tableName="ndr_code_set">
+            <column name="code_set_nm" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_description" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alt_description" type="varchar(64)"/>
+            <column name="sys_description" type="varchar(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20220705133945-02" author="amos-data-fi">
+        <loadData encoding="UTF-8"
+                  file="installers/ndr/ndrcodeset.csv"
+                  separator=";"
+                  tableName="ndr_code_set"/>
+    </changeSet>
+
+    <changeSet id="2022075133945-03-3" author="amos-data-fi">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ndr_facility"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ndr_facility">
+            <column name="id" type="JAVA.UTIL.UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false" unique="true"/>
+
+
+            </column>
+            <column name="facility_local_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="datim_id" type="varchar(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2022075133945-05" author="amos-data-fi">
+        <createTable tableName="ndr_message_log">
+            <column name="id" type="serial">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="identifier" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2022075133945-06" author="amos-data-fi">
+        <createIndex tableName="ndr_message_log" indexName="idx_message_identifier">
+            <column name="identifier"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20220730133945-02" author="amos-data-fi">
+        <loadData encoding="UTF-8"
+                  file="installers/ndr/ndrcodeset_update.csv"
+                  separator=";"
+                  tableName="ndr_code_set"/>
+    </changeSet>
+
+    <changeSet id="202207128092745-01-fix" author="amos-data-fi">
+        <sql>
+            update ndr_code_set set code = '1a' where code = '4a';
+            update ndr_code_set set code = '1b' where code = '4b';
+        </sql>
+    </changeSet>
+
+    <changeSet id="202207012092745-01" author="amos-data-fi">
+        <sql>
+            update ndr_code_set set code = '1y' where code = '5e';
+            delete from ndr_code_set where code = '4e';
+            delete from ndr_code_set where code = '1g';
+            delete from ndr_code_set where code = '1h';
+
+            truncate ndr_message_log
+        </sql>
+    </changeSet>
+
+    <changeSet id="20220782092745-01" author="amos-data-fi">
+        <sql>
+            truncate ndr_message_log
+        </sql>
+    </changeSet>
+
+    <changeSet id="202207082092745-02" author="amos-data-fi">
+        <sql>
+            update ndr_code_set set code = '2e' where code = '5b';
+        </sql>
+    </changeSet>
+
+    <changeSet id="20220732209274-01" author="amos-data-fi">
+        <sql>
+            alter table ndr_message_log alter column identifier type varchar(64)
+        </sql>
+    </changeSet>
+
+    <changeSet id="20220751922274-01" author="amos-data-fi">
+        <sql>
+            delete from ndr_code_set where code_description = 'ABC-3TC-DTG';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '1o', 'ABC-3TC-DTG');
+            delete from ndr_code_set where code_description = 'ABC-3TC-EFV';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '4c', 'ABC-3TC-EFV');
+            delete from ndr_code_set where code_description = 'ABC-3TC-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '5a', 'ABC-3TC-LPV/r');
+            delete from ndr_code_set where code_description = 'ABC-3TC-NVP';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '4d', 'ABC-3TC-NVP');
+            delete from ndr_code_set where code_description = 'AZT-3TC-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2e', 'AZT-3TC-LPV/r');
+            delete from ndr_code_set where code_description = 'AZT-3TC-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2e', 'AZT-3TC-LPV/r');
+            delete from ndr_code_set where code_description = 'AZT-3TC-NVP';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '1b', 'AZT-3TC-NVP');
+            delete from ndr_code_set where code_description = 'd4T-3TC-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '5c', 'd4T-3TC-LPV/r');
+            delete from ndr_code_set where code_description = 'TDF-3TC-ATV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2d', 'TDF-3TC-ATV/r');
+            delete from ndr_code_set where code_description = 'TDF-3TC-DTG';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '1m', 'TDF-3TC-DTG');
+            delete from ndr_code_set where code_description = 'TDF-3TC-EFV';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '1e', 'TDF-3TC-EFV');
+            delete from ndr_code_set where code_description = 'TDF-3TC-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2b', 'TDF-3TC-LPV/r');
+            delete from ndr_code_set where code_description = 'ABC/3TC/ATV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2m', 'ABC/3TC/ATV/r');
+            delete from ndr_code_set where code_description = 'ABC-3TC-LPV/r-DTG';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '3g', 'ABC-3TC-LPV/r-DTG');
+            delete from ndr_code_set where code_description = 'DTG-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '3g', 'DTG-LPV/r');
+            delete from ndr_code_set where code_description = 'ABC-DDI-LPV/r';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '2j', 'ABC-DDI-LPV/r');
+            delete from ndr_code_set where code_description = 'D4T-3TC-NVP';
+            insert into ndr_code_set(code_set_nm, code, code_description) values('ARV_REGIMEN', '4j', 'D4T-3TC-NVP');
+        </sql>
+    </changeSet>
+
+    <changeSet id="202207922274-02" author="amos-data-fi">
+        <createTable tableName="ndr_xml_status">
+            <column name="id" type="serial" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="facility_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="files" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20220715274-01" author="amos-data-fi">
+        <sql>
+            delete from ndr_code_set where code_description = 'DTG-LPV/r';
+
+            with c as (
+            select ctid, row_number() over(partition by code_set_nm, code, code_description order by code) rn from ndr_code_set
+            )
+            delete from ndr_code_set where ctid in (select ctid from c where rn != 1);
+            update patient set lga_id = 535, last_modified = current_timestamp where lga_id = 534;
+        </sql>
+    </changeSet>
+
+    <changeSet id="2022075081104-01" author="amos-data-fi">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="ndr_facility" columnName="national_id"/>
+            <and>
+                <not>
+                    <columnExists tableName="ndr_facility" columnName="datim_id"/>
+                </not>
+            </and>
+        </preConditions>
+        <renameColumn tableName="ndr_facility" oldColumnName="national_id" newColumnName="datim_id"/>
+    </changeSet>
+
+    <changeSet id="2022075081104-02" author="amos-data-fi">
+        <sql>
+            truncate ndr_message_log
+        </sql>
+    </changeSet>
+</databaseChangeLog>
