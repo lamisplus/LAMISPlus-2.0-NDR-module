@@ -180,21 +180,21 @@
             select ctid, row_number() over(partition by code_set_nm, code, code_description order by code) rn from ndr_code_set
             )
             delete from ndr_code_set where ctid in (select ctid from c where rn != 1);
-            update patient set lga_id = 535, last_modified = current_timestamp where lga_id = 534;
+--             update patient set lga_id = 535, last_modified = current_timestamp where lga_id = 534;
         </sql>
     </changeSet>
 
-    <changeSet id="2022075081104-01" author="amos-data-fi">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="ndr_facility" columnName="national_id"/>
-            <and>
-                <not>
-                    <columnExists tableName="ndr_facility" columnName="datim_id"/>
-                </not>
-            </and>
-        </preConditions>
-        <renameColumn tableName="ndr_facility" oldColumnName="national_id" newColumnName="datim_id"/>
-    </changeSet>
+<!--    <changeSet id="2022075081104-01" author="amos-data-fi">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <columnExists tableName="ndr_facility" columnName="national_id"/>-->
+<!--            <and>-->
+<!--                <not>-->
+<!--                    <columnExists tableName="ndr_facility" columnName="datim_id"/>-->
+<!--                </not>-->
+<!--            </and>-->
+<!--        </preConditions>-->
+<!--        <renameColumn tableName="ndr_facility" oldColumnName="national_id" newColumnName="datim_id"/>-->
+<!--    </changeSet>-->
 
     <changeSet id="2022075081104-02" author="amos-data-fi">
         <sql>

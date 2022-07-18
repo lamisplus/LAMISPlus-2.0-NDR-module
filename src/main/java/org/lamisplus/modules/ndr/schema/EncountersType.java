@@ -1,10 +1,7 @@
 
 package org.lamisplus.modules.ndr.schema;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +29,7 @@ import java.util.List;
 @XmlType(name = "EncountersType", propOrder = {
     "hivEncounter"
 })
+@XmlRootElement
 public class EncountersType {
 
     @XmlElement(name = "HIVEncounter")

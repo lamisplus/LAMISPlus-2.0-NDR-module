@@ -103,6 +103,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlType(name = "PatientDemographicsType", propOrder = {
     "patientIdentifier",
     "identifierChange",

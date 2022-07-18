@@ -28,25 +28,25 @@ public class AsyncConfiguration implements AsyncConfigurer, SchedulingConfigurer
     @Bean(name = "taskExecutor")
     public Executor getAsyncExecutor() {
         LOG.info ("Creating Async Task Executor {}", "Creating Async Task Executor ");
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(3);
-        executor.setQueueCapacity(3);
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor ();
+        executor.setCorePoolSize (3);
+        executor.setMaxPoolSize (3);
+        executor.setQueueCapacity (3);
         return new ExceptionHandlingAsyncTaskExecutor (executor);
     }
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new SimpleAsyncUncaughtExceptionHandler();
+        return new SimpleAsyncUncaughtExceptionHandler ();
     }
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(scheduledTaskExecutor());
+        taskRegistrar.setScheduler (scheduledTaskExecutor ());
     }
 
     @Bean
     public Executor scheduledTaskExecutor() {
-        return Executors.newScheduledThreadPool(3);
+                                                                                                                                                    return Executors.newScheduledThreadPool (3);
     }
 }

@@ -53,6 +53,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "estimatedDeliveryDate",
     "patientAge"
 })
+@XmlRootElement
 public class CommonQuestionsType {
 
     @XmlElement(name = "HospitalNumber")
