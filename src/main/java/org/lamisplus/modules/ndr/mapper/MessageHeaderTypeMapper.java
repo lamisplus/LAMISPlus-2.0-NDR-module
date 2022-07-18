@@ -19,5 +19,37 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MessageHeaderTypeMapper {
+    private final HivEnrollmentService hivEnrollmentService;
+    private final OrganisationUnitService organisationUnitService;
+
+
+    public MessageHeaderType getMessageHeader(Long patientId) {
+        MessageHeaderType header = new MessageHeaderType ();
+        Optional<HivEnrollmentDto> hivEnrollmentOptional =
+                hivEnrollmentService.getHivEnrollmentByPersonIdAndArchived (patientId);
+        if (hivEnrollmentOptional.isPresent ()) {
+            Long facilityId = hivEnrollmentOptional.get ().getFacilityId ();
+            try {
+                header.setMessageCreationDateTime (DateUtil.getXmlDateTime (new Date ()));
+                header.setMessageSchemaVersion (new BigDecimal ("1.6"));
+                FacilityType sendingOrganization = getTreatmentFacility (facilityId);
+                header.setMessageSendingOrganization (sendingOrganization);
+                return header;
+            } catch (Exception exception) {
+                exception.printStackTrace ();
+            }
+        }
+        return null;
+    }
+
+
+    public FacilityType getTreatmentFacility(long facilityId) {
+        FacilityType facility = new FacilityType ();
+        facility.setFacilityTypeCode ("FAC");
+        OrganisationUnit ndrFacility = organisationUnitService.getOrganizationUnit (facilityId);
+        facility.setFacilityID (ndrFacility.getName ());
+        facility.setFacilityName (ndrFacility.getName ());
+        return facility;
+    }
 
 }
