@@ -43,7 +43,7 @@ public class RegimenTypeMapper {
             Set<ArtPharmacy> patientRegimens = artPharmacyRepository.findAll ()
                     .stream ().filter (artPharmacy -> artPharmacy.getPerson ().getUuid ().equals (person.getUuid ()))
                     .collect (Collectors.toSet ());
-            LOG.info (person.getHospitalNumber () + "pharmacy visit is : {}", patientRegimens.size ());
+            LOG.info (person.getHospitalNumber () + " pharmacy visit is : {}", patientRegimens.size ());
             patientRegimens.forEach (artPharmacy -> {
                 Set<Regimen> regimens = artPharmacy.getRegimens ();
                 processAndSetPrescribeRegimen (artPharmacy, regimens, artVisitDateComparator, patientRegimens, condition);
@@ -68,8 +68,10 @@ public class RegimenTypeMapper {
                 regimenType.setVisitID (artPharmacy.getUuid ());
                 processAndSetVisitDate (regimenType, artPharmacy.getVisitDate ());
                 Integer refillPeriod = artPharmacy.getRefillPeriod ();
+                if (refillPeriod == null ||  refillPeriod < 1 ) {
+                    refillPeriod = 1;
+                }
                 if (refillPeriod > 180) refillPeriod = 180;
-                if (refillPeriod < 1) refillPeriod = 1;
                 regimenType.setPrescribedRegimenDuration (String.valueOf (refillPeriod));
                 Map<Long, String> prescribedRegimenTypeMapper = prescribedRegimenTypeMapper ();
                 String prescribedRegimenType = prescribedRegimenTypeMapper.get (regimen.getRegimenType ().getId ());

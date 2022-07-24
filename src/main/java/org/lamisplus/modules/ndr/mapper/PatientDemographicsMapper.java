@@ -40,7 +40,8 @@ public class PatientDemographicsMapper {
             try {
                 Person person = optionalPerson.get ();
                 FacilityType treatmentFacility = messageHeaderTypeMapper.getTreatmentFacility (person.getFacilityId ());
-                patientDemographics.setPatientIdentifier (person.getUuid ());
+                String identifier = treatmentFacility.getFacilityID () + "_" + person.getUuid ();
+                patientDemographics.setPatientIdentifier (identifier);
                 patientDemographics.setTreatmentFacility (treatmentFacility);
                 processAndSetDateOFBirth (patientDemographics, person.getDateOfBirth ());
                 processAndSetSex (patientDemographics, person.getGender ());

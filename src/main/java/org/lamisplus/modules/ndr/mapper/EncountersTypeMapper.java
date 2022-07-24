@@ -91,7 +91,7 @@ public class EncountersTypeMapper {
 
 
     private void processClinicalEncounterRegimens(Person person, ARTClinical artClinical, HIVEncounterType hivEncounterType) {
-        List<ArtPharmacy> pharmacies = pharmacyRepository.getArtPharmaciesByVisitIdAndPerson (artClinical.getVisitId (), person);
+        List<ArtPharmacy> pharmacies = pharmacyRepository.getArtPharmaciesByVisitAndPerson (artClinical.getVisit(), person);
         LOG.info ("pharmacy list = {}", pharmacies.size ());
         List<Long> regimenTypeIds = new ArrayList<> (Arrays.asList (1l, 2l, 3l, 4l, 14l));
         List<Long> cotrimoxazoleTypeId = new ArrayList<> (Arrays.asList (8l));

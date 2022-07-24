@@ -90,7 +90,7 @@ public class ConditionSpecificQuestionsTypeMapper {
                         Optional<CodedSimpleType> simpleCodeSet = ndrCodeSetResolverService.getSimpleCodeSet (ndrRegimen);
                         simpleCodeSet.ifPresent (hiv::setFirstARTRegimen);
                     });
-                    processAndSetCD4(hiv, age, firstArtClinical);
+                    processAndSetCD4 (hiv, age, firstArtClinical);
                 }
                 disease.setHIVQuestions (hiv);
             });
@@ -234,40 +234,46 @@ public class ConditionSpecificQuestionsTypeMapper {
     }
 
     private void processAndSetCD4(HIVQuestionsType hiv, int age, ARTClinical artCommence) {
-            Integer cd4 = Integer.valueOf (artCommence.getCd4 ());
-            Long cd4p = artCommence.getCd4Percentage ();
-            String clinicalStage = null;
-            String eligible = null;
+        Long cd4 = artCommence.getCd4 ();
+        Long cd4p = artCommence.getCd4Percentage ();
+        String clinicalStage = null;
+        String eligible = null;
+        if (cd4 == null) {
+            cd4 = 0l;
+        }
+        if (cd4 == null) {
+            cd4p = 0l;
+        }
         String whyEligible = "WHY_ELIGIBLE";
         if (age >= 15) {
             if (cd4 < 350) {
                 Optional<String> ndrCodeSet = ndrCodeSetResolverService.getNDRCodeSetCode (whyEligible, "CD4");
-                if(ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
+                if (ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
             } else {
                 ApplicationCodesetDTO WHOStageCode = applicationCodesetService.getApplicationCodeset (artCommence.getWhoStagingId ());
                 if (WHOStageCode != null) {
-                     clinicalStage = WHOStageCode.getDisplay ();
+                    clinicalStage = WHOStageCode.getDisplay ();
                     if (clinicalStage.equalsIgnoreCase ("Stage III") ||
                             clinicalStage.equalsIgnoreCase ("Stage IV")) {
                         Optional<String> ndrCodeSet = ndrCodeSetResolverService.getNDRCodeSetCode (whyEligible, "Staging");
-                        if(ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
+                        if (ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
                     }
                 }
             }
         } else {
             if (cd4 < 750 || cd4p < 25) {
                 Optional<String> ndrCodeSet;
-                if(cd4 < 25){
+                if (cd4 < 25) {
                     ndrCodeSet = ndrCodeSetResolverService.getNDRCodeSetCode (whyEligible, "CD4p");
-                }else {
+                } else {
                     ndrCodeSet = ndrCodeSetResolverService.getNDRCodeSetCode (whyEligible, "CD4");
                 }
-                if(ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
+                if (ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
             } else {
                 if (clinicalStage.equalsIgnoreCase ("Stage III") ||
                         clinicalStage.equalsIgnoreCase ("Stage IV")) {
                     Optional<String> ndrCodeSet = ndrCodeSetResolverService.getNDRCodeSetCode (whyEligible, "Staging");
-                    if(ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
+                    if (ndrCodeSet.isPresent ()) eligible = ndrCodeSet.get ();
                 }
             }
         }
