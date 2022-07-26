@@ -1,9 +1,8 @@
-package org.lamisplus.modules.ndr.controller;
+package org.lamisplus.modules.ndr.config.controller;
 
 
 import lombok.RequiredArgsConstructor;
 import org.lamisplus.modules.ndr.service.XMLTestService;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -11,14 +10,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/ndr")
 @RequiredArgsConstructor
 public class NDRController {
-    private  final XMLTestService xmlTestService;
+    private final XMLTestService xmlTestService;
 
-//    @GetMapping("/message-header/{personId}")
+    //    @GetMapping("/message-header/{personId}")
 //    public void generateMessageHeaderType(@PathVariable("personId") Long personId){
 //        xmlTestService.shouldPrintMessageHeaderTypeXml (personId);
 //    }
@@ -45,14 +45,14 @@ public class NDRController {
 //    public void generatePatientClinicalEncounterXml(@PathVariable("personId") Long personId){
 //        xmlTestService.shouldPrintPatientConditionEncountersTypeXml (personId);
 //    }
-    @GetMapping("/patient/{personId}")
-    public void generatePatientXml(@PathVariable("personId") Long personId, @RequestParam("facility") Long facility){
+    @GetMapping("/generate/{personId}")
+    public void generatePatientXml(@PathVariable("personId") Long personId, @RequestParam("facility") Long facility) {
         xmlTestService.shouldPrintPatientContainerXml (personId, facility);
     }
 
-    @GetMapping("/{facilityId}")
-    public void generateFacilityPatientXml(@PathVariable("facilityId") Long facilityId){
-        xmlTestService.generateNDRXMLByFacility (facilityId);
+    @GetMapping("/generate")
+    public void generateFacilityPatientXml(@RequestBody List<Long> facilityIds) {
+        facilityIds.forEach (xmlTestService::generateNDRXMLByFacility);
     }
 
 
@@ -68,9 +68,9 @@ public class NDRController {
         response.flushBuffer ();
     }
 
-    @GetMapping("/list-files")
+    @GetMapping("/files")
     public Collection<String> listFiles() {
-        return xmlTestService.listFiles();
+        return xmlTestService.listFiles ();
     }
 
 }
