@@ -13,7 +13,6 @@ import org.lamisplus.modules.ndr.schema.*;
 import org.lamisplus.modules.ndr.utility.ZipUtility;
 import org.lamisplus.modules.patient.domain.entity.Person;
 import org.lamisplus.modules.patient.repository.PersonRepository;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import javax.xml.XMLConstants;
@@ -62,7 +61,6 @@ public class XMLTestService {
 
     private static final String BASE_DIR = "runtime/ndr/transfer/";
 
-    private final SimpMessageSendingOperations messagingTemplate;
 
     private final AtomicLong messageId = new AtomicLong (0);
 
