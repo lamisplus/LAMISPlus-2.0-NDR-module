@@ -3,6 +3,8 @@ package org.lamisplus.modules.ndr.config.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lamisplus.modules.ndr.service.XMLTestService;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NDRController {
     private final XMLTestService xmlTestService;
+
+    private final SimpMessageSendingOperations messagingTemplate;
 
     //    @GetMapping("/message-header/{personId}")
 //    public void generateMessageHeaderType(@PathVariable("personId") Long personId){
@@ -51,8 +55,11 @@ public class NDRController {
     }
 
     @GetMapping("/generate")
-    public void generateFacilityPatientXml(@RequestBody List<Long> facilityIds) {
+    @Async
+    public void generateFacilityPatientXml(@RequestParam List<Long> facilityIds) {
+        messagingTemplate.convertAndSend("/topic/ndr-status", "start");
         facilityIds.forEach (xmlTestService::generateNDRXMLByFacility);
+        messagingTemplate.convertAndSend("/topic/ndr-status", "end");
     }
 
 
