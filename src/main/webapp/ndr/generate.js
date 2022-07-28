@@ -87,15 +87,15 @@ export default function GenerateNdr(props) {
  const  generateAction = () => {
    setProcessing(true)
    toggle();
+   console.log(checked)
    let FacilityIDArray = [];
   //LOOPING THROUGH THE FACILITIES OBJECT ARRAY TO FORM THE NEW OBJECT 
    checked.forEach(function(value) {
-    delete value['id'];
-    delete value['applicationUserId'];
-    delete value['archived'];
-    FacilityIDArray.push(value);
+    const id = value.organisationUnitId
+    FacilityIDArray.push(id);
        
    });
+   console.log(FacilityIDArray)
    facilitiesApi['facilities'] = FacilityIDArray;
    //SENDING A POST REQUEST 
    axios.post(`${api.url}ndr/generate`, facilitiesApi,
