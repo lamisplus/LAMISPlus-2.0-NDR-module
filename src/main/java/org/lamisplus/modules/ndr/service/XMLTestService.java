@@ -8,7 +8,11 @@ import org.apache.commons.io.IOUtils;
 import org.lamisplus.modules.base.domain.entities.OrganisationUnit;
 import org.lamisplus.modules.base.service.OrganisationUnitService;
 import org.lamisplus.modules.hiv.repositories.ARTClinicalRepository;
+import org.lamisplus.modules.ndr.domain.entities.NdrMessageLog;
+import org.lamisplus.modules.ndr.domain.entities.NdrXmlStatus;
 import org.lamisplus.modules.ndr.mapper.*;
+import org.lamisplus.modules.ndr.repositories.NdrMessageLogRepository;
+import org.lamisplus.modules.ndr.repositories.NdrXmlStatusRepository;
 import org.lamisplus.modules.ndr.schema.*;
 import org.lamisplus.modules.ndr.utility.ZipUtility;
 import org.lamisplus.modules.patient.domain.entity.Person;
@@ -27,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -58,6 +63,10 @@ public class XMLTestService {
     private final NDRCodeSetResolverService ndrCodeSetResolverService;
 
     private final PersonRepository personRepository;
+
+    private  final NdrMessageLogRepository ndrMessageLogRepository;
+
+    private  final NdrXmlStatusRepository ndrXmlStatusRepository;
 
     private static final String BASE_DIR = "runtime/ndr/transfer/";
 
@@ -247,8 +256,18 @@ public class XMLTestService {
         List<NDRStatus> ndrStatusList = artPatientIds.stream ().map (patientId -> shouldPrintPatientContainerXml (patientId, facilityId))
                 .collect (Collectors.toList ());
 
+        int filesSize = ndrStatusList
+                .stream ()
+                .map (ndrStatus -> new NdrMessageLog (ndrStatus.identifier, ndrStatus.getFile (), LocalDateTime.now ()))
+                .map (ndrMessageLogRepository::save).collect (Collectors.toList ()).size ();
         zipFiles (facilityId);
+        NdrXmlStatus ndrXmlStatus = new NdrXmlStatus ();
+        ndrXmlStatus.setFacilityId (facilityId);
+        ndrXmlStatus.setFiles (filesSize);
+        ndrXmlStatus.setLastModified (LocalDateTime.now ());
+        ndrXmlStatusRepository.save (ndrXmlStatus);
     }
+
 
     public NDRStatus processAndGenerateNDRFile(Marshaller jaxbMarshaller, Container container, Long facilityId, String identifier, Long id) throws JAXBException {
         String fileName = generateFileName (facilityId, identifier);
