@@ -1,7 +1,8 @@
-package org.lamisplus.modules.ndr.config.controller;
+package org.lamisplus.modules.ndr.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.lamisplus.modules.ndr.domain.dto.NdrXmlStatusDto;
 import org.lamisplus.modules.ndr.service.XMLTestService;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
@@ -68,7 +69,7 @@ public class NDRController {
         ByteArrayOutputStream baos = xmlTestService.downloadFile (file);
         response.setHeader ("Content-Type", "application/octet-stream");
         response.setHeader ("Content-Disposition", "attachment;filename=" + file + ".zip");
-        response.setHeader ("Content-Length", Integer.valueOf (baos.size ()).toString ());
+        response.setHeader ("Content-Length", Integer.toString (baos.size ()));
         OutputStream outputStream = response.getOutputStream ();
         outputStream.write (baos.toByteArray ());
         outputStream.close ();
@@ -76,8 +77,8 @@ public class NDRController {
     }
 
     @GetMapping("/files")
-    public Collection<String> listFiles() {
-        return xmlTestService.listFiles ();
+    public Collection<NdrXmlStatusDto> listFiles() {
+        return xmlTestService.getNdrStatus ();
     }
 
 }

@@ -3,9 +3,7 @@ package org.lamisplus.modules.ndr.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +21,9 @@ public class NdrXmlStatus {
 
     @Column(name = "files", nullable = false)
     private Integer files;
+
+    @Column(name = "file_name", nullable = false)
+    private String  fileName;
 
     @Column(name = "last_modified", nullable = false)
     private LocalDateTime lastModified;

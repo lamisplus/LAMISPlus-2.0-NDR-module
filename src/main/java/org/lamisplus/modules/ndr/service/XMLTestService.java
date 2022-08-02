@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.lamisplus.modules.base.domain.entities.OrganisationUnit;
 import org.lamisplus.modules.base.service.OrganisationUnitService;
 import org.lamisplus.modules.hiv.repositories.ARTClinicalRepository;
+import org.lamisplus.modules.ndr.domain.dto.NdrXmlStatusDto;
 import org.lamisplus.modules.ndr.domain.entities.NdrMessageLog;
 import org.lamisplus.modules.ndr.domain.entities.NdrXmlStatus;
 import org.lamisplus.modules.ndr.mapper.*;
@@ -64,9 +65,9 @@ public class XMLTestService {
 
     private final PersonRepository personRepository;
 
-    private  final NdrMessageLogRepository ndrMessageLogRepository;
+    private final NdrMessageLogRepository ndrMessageLogRepository;
 
-    private  final NdrXmlStatusRepository ndrXmlStatusRepository;
+    private final NdrXmlStatusRepository ndrXmlStatusRepository;
 
     private static final String BASE_DIR = "runtime/ndr/transfer/";
 
@@ -197,9 +198,9 @@ public class XMLTestService {
     public void shouldPrintPatientConditionTypeXml(Long personId) {
         try {
             new ConditionType ();
-            ConditionType ConditionType;
+            ConditionType conditionType;
             JAXBContext jaxbContext = JAXBContext.newInstance (ConditionType.class);
-            ConditionType = conditionTypeMapper.getConditionType (personId);
+            conditionType = conditionTypeMapper.getConditionType (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
             jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -207,7 +208,7 @@ public class XMLTestService {
             String currentPath = System.getProperty ("user.dir");
             String fileName = "patient.xml";
             File file = new File (String.format ("%s/temp/%s", currentPath, fileName));
-            jaxbMarshaller.marshal (ConditionType, file);
+            jaxbMarshaller.marshal (conditionType, file);
         } catch (Exception ignore) {
             ignore.printStackTrace ();
         }
@@ -260,10 +261,11 @@ public class XMLTestService {
                 .stream ()
                 .map (ndrStatus -> new NdrMessageLog (ndrStatus.identifier, ndrStatus.getFile (), LocalDateTime.now ()))
                 .map (ndrMessageLogRepository::save).collect (Collectors.toList ()).size ();
-        zipFiles (facilityId);
+        String fileName = zipFiles (facilityId);
         NdrXmlStatus ndrXmlStatus = new NdrXmlStatus ();
         ndrXmlStatus.setFacilityId (facilityId);
         ndrXmlStatus.setFiles (filesSize);
+        ndrXmlStatus.setFileName (fileName);
         ndrXmlStatus.setLastModified (LocalDateTime.now ());
         ndrXmlStatusRepository.save (ndrXmlStatus);
     }
@@ -284,7 +286,6 @@ public class XMLTestService {
         OrganisationUnit facility = organisationUnitService.getOrganizationUnit (facilityId);
         String stateSystem = facility.getParentParentOrganisationUnitName ();
         String lgaSystem = facility.getParentOrganisationUnitName ();
-        ;
         String datim = facility.getName ();
         Optional<CodedSimpleType> stateNdr = ndrCodeSetResolverService.getNDRCodeSet ("STATES", stateSystem);
         StringBuilder state = new StringBuilder ();
@@ -293,7 +294,7 @@ public class XMLTestService {
         }
         Optional<CodedSimpleType> lgaNdr = ndrCodeSetResolverService.getNDRCodeSet ("LGA", lgaSystem);
         StringBuilder lga = new StringBuilder ();
-        if (stateNdr.isPresent ()) {
+        if (lgaNdr.isPresent ()) {
             lga.append (lgaNdr.get ().getCode ());
         }
         Date date = new Date ();
@@ -306,7 +307,7 @@ public class XMLTestService {
         return fileName;
     }
 
-    private void zipFiles(long facilityId) {
+    private String zipFiles(long facilityId) {
         OrganisationUnit facility = organisationUnitService.getOrganizationUnit (facilityId);
         Date date = new Date ();
         SimpleDateFormat dateFormat = new SimpleDateFormat ("ddMMyyyy");
@@ -317,20 +318,26 @@ public class XMLTestService {
             new File (BASE_DIR + "ndr").mkdirs ();
             new File (Paths.get (outputZipFile).toAbsolutePath ().toString ()).createNewFile ();
             List<File> files = new ArrayList<> ();
-            try (Stream<Path> walk = Files.walk (Paths.get (sourceFolder))) {
-                files = walk.filter (Files::isRegularFile)
-                        .map (Path::toFile)
-                        .collect (Collectors.toList ());
-            } catch (IOException e) {
-                e.printStackTrace ();
-            }
+            files = getFiles (sourceFolder, files);
             LOG.info ("Files: {}", files);
-
             long fifteenMB = FileUtils.ONE_MB * 15;
             ZipUtility.zip (files, Paths.get (outputZipFile).toAbsolutePath ().toString (), fifteenMB);
+            return fileName;
         } catch (Exception exception) {
             exception.printStackTrace ();
         }
+        return null;
+    }
+
+    private List<File> getFiles(String sourceFolder, List<File> files) {
+        try (Stream<Path> walk = Files.walk (Paths.get (sourceFolder))) {
+            files = walk.filter (Files::isRegularFile)
+                    .map (Path::toFile)
+                    .collect (Collectors.toList ());
+        } catch (IOException e) {
+            e.printStackTrace ();
+        }
+        return files;
     }
 
     @SneakyThrows
@@ -359,9 +366,8 @@ public class XMLTestService {
         } catch (IOException ignored) {
         }
         String file = BASE_DIR + "ndr/";
-        try {
-            Files.list (Paths.get (BASE_DIR + "ndr/"))
-                    .filter (path -> path.getFileName ().toString ().contains (file))
+        try(Stream<Path> list = Files.list (Paths.get (BASE_DIR + "ndr/"))) {
+            list.filter (path -> path.getFileName ().toString ().contains (file))
                     .forEach (path -> {
                         try {
                             Files.delete (path);
@@ -390,5 +396,20 @@ public class XMLTestService {
     public Set<String> listFiles() {
         String folder = BASE_DIR + "ndr";
         return listFilesUsingDirectoryStream (folder);
+    }
+
+    @SneakyThrows
+    public Set<NdrXmlStatusDto> getNdrStatus() {
+        return ndrXmlStatusRepository.findAll ()
+                .stream ()
+                .map (ndrXmlStatus -> NdrXmlStatusDto
+                        .builder ()
+                        .facility (organisationUnitService.getOrganizationUnit (ndrXmlStatus.getFacilityId ()).getName ())
+                        .fileName (ndrXmlStatus.getFileName ())
+                        .files (ndrXmlStatus.getFiles ())
+                        .lastModified (ndrXmlStatus.getLastModified ())
+                        .id (ndrXmlStatus.getId ())
+                        .build ()
+                ).collect (Collectors.toSet ());
     }
 }
