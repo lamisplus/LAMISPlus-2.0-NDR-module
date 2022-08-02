@@ -5,6 +5,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.lamisplus.modules.base.domain.entities.OrganisationUnit;
 import org.lamisplus.modules.base.service.OrganisationUnitService;
 import org.lamisplus.modules.hiv.repositories.ARTClinicalRepository;
@@ -71,7 +73,11 @@ public class XMLTestService {
 
     private static final String BASE_DIR = "runtime/ndr/transfer/";
 
+    private static final String   USER_DIR = "user.dir";
 
+    private static final String JAXB_ENCODING = "UTF-8";
+    private static final String XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION = "\n<!-- This XML was generated from LAMISPlus application -->";
+    private static final String HEADER_BIND_COMMENT = "com.sun.xml.bind.xmlHeaders";
     private final AtomicLong messageId = new AtomicLong (0);
 
     public void shouldPrintMessageHeaderTypeXml(Long id) {
@@ -83,10 +89,13 @@ public class XMLTestService {
             messageHeaderType.setMessageUniqueID (String.valueOf (id));
             messageHeaderType.setMessageStatusCode ("INITIAL");
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+
+
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "message-header.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, id, fileName));
             jaxbMarshaller.marshal (messageHeaderType, file);
@@ -102,10 +111,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (PatientDemographicsType.class);
             patientDemographicsType = patientDemographicsMapper.getPatientDemographics (id);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient_demographics.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, id, fileName));
             jaxbMarshaller.marshal (patientDemographicsType, file);
@@ -126,10 +135,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (AddressType.class);
             addressType = addressTypeMapper.getPatientAddress (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient_address.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, personId, fileName));
             jaxbMarshaller.marshal (addressType, file);
@@ -145,10 +154,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (CommonQuestionsType.class);
             commonQuestionsType = commonQuestionsTypeMapper.getPatientCommonQuestion (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient_common_question.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, personId, fileName));
             jaxbMarshaller.marshal (commonQuestionsType, file);
@@ -164,10 +173,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (ConditionSpecificQuestionsType.class);
             conditionSpecificQuestionsType = specificQuestionsTypeMapper.getConditionSpecificQuestionsType (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient_specific_hiv_questions.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, personId, fileName));
             jaxbMarshaller.marshal (conditionSpecificQuestionsType, file);
@@ -183,10 +192,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (EncountersType.class);
             encountersType = encountersTypeMapper.encounterType (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient_encounters.xml";
             File file = new File (String.format ("%s/temp/%d/%s", currentPath, personId, fileName));
             jaxbMarshaller.marshal (encountersType, file);
@@ -202,10 +211,10 @@ public class XMLTestService {
             JAXBContext jaxbContext = JAXBContext.newInstance (ConditionType.class);
             conditionType = conditionTypeMapper.getConditionType (personId);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
-            String currentPath = System.getProperty ("user.dir");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
+            String currentPath = System.getProperty (USER_DIR);
             String fileName = "patient.xml";
             File file = new File (String.format ("%s/temp/%s", currentPath, fileName));
             jaxbMarshaller.marshal (conditionType, file);
@@ -231,9 +240,9 @@ public class XMLTestService {
             container.setMessageHeader (messageHeader);
             container.setIndividualReport (individualReportType);
             Marshaller jaxbMarshaller = getMarshaller (jaxbContext);
-            jaxbMarshaller.setProperty ("com.sun.xml.bind.xmlHeaders", "\n<!-- This XML was generated from LAMISPlus application -->");
+            jaxbMarshaller.setProperty (HEADER_BIND_COMMENT, XML_WAS_GENERATED_FROM_LAMISPLUS_APPLICATION);
             jaxbMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, "UTF-8");
+            jaxbMarshaller.setProperty (Marshaller.JAXB_ENCODING, JAXB_ENCODING);
             SchemaFactory sf = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = sf.newSchema (getClass ().getClassLoader ().getResource ("NDR 1.6.2.xsd"));
             jaxbMarshaller.setSchema (schema);
@@ -248,11 +257,11 @@ public class XMLTestService {
     }
 
     public void generateNDRXMLByFacility(Long facilityId) {
-        List<Long> artPatientIds = artClinicalRepository.findAll ()
+        Set<Long> artPatientIds = artClinicalRepository.findAll ()
                 .stream ()
                 .filter (artClinical -> artClinical.getFacilityId ().equals (facilityId))
                 .map (artClinical -> artClinical.getPerson ().getId ())
-                .collect (Collectors.toList ());
+                .collect (Collectors.toSet ());
 
         List<NDRStatus> ndrStatusList = artPatientIds.stream ().map (patientId -> shouldPrintPatientContainerXml (patientId, facilityId))
                 .collect (Collectors.toList ());
@@ -261,6 +270,7 @@ public class XMLTestService {
                 .stream ()
                 .map (ndrStatus -> new NdrMessageLog (ndrStatus.identifier, ndrStatus.getFile (), LocalDateTime.now ()))
                 .map (ndrMessageLogRepository::save).collect (Collectors.toList ()).size ();
+
         String fileName = zipFiles (facilityId);
         NdrXmlStatus ndrXmlStatus = new NdrXmlStatus ();
         ndrXmlStatus.setFacilityId (facilityId);
@@ -284,34 +294,34 @@ public class XMLTestService {
 
     private String generateFileName(Long facilityId, String identifier) {
         OrganisationUnit facility = organisationUnitService.getOrganizationUnit (facilityId);
-        String stateSystem = facility.getParentParentOrganisationUnitName ();
-        String lgaSystem = facility.getParentOrganisationUnitName ();
-        String datim = facility.getName ();
-        Optional<CodedSimpleType> stateNdr = ndrCodeSetResolverService.getNDRCodeSet ("STATES", stateSystem);
-        StringBuilder state = new StringBuilder ();
-        if (stateNdr.isPresent ()) {
-            state.append (stateNdr.get ().getCode ());
-        }
-        Optional<CodedSimpleType> lgaNdr = ndrCodeSetResolverService.getNDRCodeSet ("LGA", lgaSystem);
-        StringBuilder lga = new StringBuilder ();
-        if (lgaNdr.isPresent ()) {
-            lga.append (lgaNdr.get ().getCode ());
-        }
+        Long lgaIdOfTheFacility = facility.getParentOrganisationUnitId ();
+        OrganisationUnit lgaOrgUnitOfFacility = organisationUnitService.getOrganizationUnit (lgaIdOfTheFacility);
+        String lga = getLga (facility);
+        String state = getState (lgaOrgUnitOfFacility);
+        LOG.info ("State {}", state);
+        LOG.info ("lga {}", lga);
+        String datimCode = messageHeaderTypeMapper.getDatimCode (facilityId).orElse ("");
         Date date = new Date ();
         SimpleDateFormat dateFormat = new SimpleDateFormat ("ddMMyyyy");
-//        String fileName = StringUtils.leftPad (state.toString (), 2, "0") +
-//                StringUtils.leftPad (lga.toString (), 3, "0") +
-//                "_" + datim + "_" + StringUtils.replace (identifier, "/", "-") + "_" + dateFormat.format (date) + ".xml";
-//        fileName = RegExUtils.replaceAll (fileName, "/", "-");
-        String fileName = facilityId + "_" + identifier + "_" + dateFormat.format (date) + ".xml";
-        return fileName;
+        String fileName = StringUtils.leftPad (state, 2, "0") +
+                StringUtils.leftPad (lga, 3, "0") +
+                "_" + datimCode + "_" + StringUtils.replace (identifier, "/", "-") + "_" + dateFormat.format (date) + ".xml";
+        return RegExUtils.replaceAll (fileName, "/", "-");
     }
 
     private String zipFiles(long facilityId) {
-        OrganisationUnit facility = organisationUnitService.getOrganizationUnit (facilityId);
-        Date date = new Date ();
         SimpleDateFormat dateFormat = new SimpleDateFormat ("ddMMyyyy");
-        String fileName = facilityId + "_" + facility.getName () + "_" + dateFormat.format (date) + ".zip";
+        OrganisationUnit facility = organisationUnitService.getOrganizationUnit (facilityId);
+        Long lgaIdOfTheFacility = facility.getParentOrganisationUnitId ();
+        OrganisationUnit lgaOrgUnitOfFacility = organisationUnitService.getOrganizationUnit (lgaIdOfTheFacility);
+        String lga = getLga (facility);
+        String state = getState (lgaOrgUnitOfFacility);
+        String datimCode = messageHeaderTypeMapper.getDatimCode (facilityId).orElse ("");
+        String fileName = StringUtils.leftPad (state, 2, "0") +
+                StringUtils.leftPad (lga, 3, "0") + "_" + datimCode +
+                "_" + facility.getName () + "_" + dateFormat.format (new Date ()) + ".zip";
+        fileName = RegExUtils.replaceAll (fileName, "/", "-");
+
         try {
             String sourceFolder = BASE_DIR + "temp/" + facilityId + "/";
             String outputZipFile = BASE_DIR + "ndr/" + fileName;
@@ -366,7 +376,7 @@ public class XMLTestService {
         } catch (IOException ignored) {
         }
         String file = BASE_DIR + "ndr/";
-        try(Stream<Path> list = Files.list (Paths.get (BASE_DIR + "ndr/"))) {
+        try (Stream<Path> list = Files.list (Paths.get (BASE_DIR + "ndr/"))) {
             list.filter (path -> path.getFileName ().toString ().contains (file))
                     .forEach (path -> {
                         try {
@@ -412,4 +422,30 @@ public class XMLTestService {
                         .build ()
                 ).collect (Collectors.toSet ());
     }
+
+
+    public String getLga(OrganisationUnit facility) {
+        Long lgaId = facility.getParentOrganisationUnitId ();
+        OrganisationUnit lgaSystem = organisationUnitService.getOrganizationUnit (lgaId);
+        Optional<CodedSimpleType> lgaNdr = ndrCodeSetResolverService.getNDRCodeSet ("LGA", lgaSystem.getName ());
+        LOG.info ("System LGA {}", lgaSystem.getName ());
+        StringBuilder lga = new StringBuilder ();
+        if (lgaNdr.isPresent ()) {
+            lga.append (lgaNdr.get ().getCode ());
+        }
+        return lga.toString ();
+    }
+
+    public String getState(OrganisationUnit lgaOrgUnit) {
+        Long stateId = lgaOrgUnit.getParentOrganisationUnitId ();
+        OrganisationUnit stateSystem = organisationUnitService.getOrganizationUnit (stateId);
+        Optional<CodedSimpleType> stateNdr = ndrCodeSetResolverService.getNDRCodeSet ("STATES", stateSystem.getName ());
+        LOG.info ("System State {}", stateSystem.getName ());
+        StringBuilder state = new StringBuilder ();
+        if (stateNdr.isPresent ()) {
+            state.append (stateNdr.get ().getCode ());
+        }
+        return state.toString ();
+    }
+
 }
