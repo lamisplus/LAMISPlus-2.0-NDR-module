@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/ndr")
+@RequestMapping("api/v1/ndr")
 @RequiredArgsConstructor
 public class NDRController {
     private final XMLTestService xmlTestService;

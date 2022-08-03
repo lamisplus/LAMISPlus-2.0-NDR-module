@@ -248,7 +248,7 @@ public class XMLTestService {
             jaxbMarshaller.setSchema (schema);
             StringBuilder personUuid = new StringBuilder ();
             optionalPerson.ifPresent (person -> personUuid.append (person.getUuid ()));
-            String identifier = messageHeaderTypeMapper.getTreatmentFacility (facilityId).getFacilityName () + "_" + personUuid;
+            String identifier = messageHeaderTypeMapper.getDatimCode (facilityId).orElse ("") + "_" + personUuid;
             return processAndGenerateNDRFile (jaxbMarshaller, container, facilityId, identifier, id);
         } catch (Exception ignore) {
             ignore.printStackTrace ();
