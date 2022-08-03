@@ -8,6 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Checkbox from '@material-ui/core/Checkbox';
 import axios from "axios";
 import * as api from "./../../../api";
+import { token as token, url as baseUrl } from "./../../../api";
 import { CardBody, Card} from 'reactstrap';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {GiFiles} from 'react-icons/gi'; 
@@ -18,6 +19,7 @@ import { useHistory } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-widgets/dist/css/react-widgets.css";
+import { Spinner } from "reactstrap";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function GenerateNdr(props) {
+  const [loading, stillLoading] = useState(true)
   let history = useHistory();
   const classes = useStyles();
   const [facilities, setFacilities] = useState( [])
@@ -53,7 +56,7 @@ export default function GenerateNdr(props) {
 
     axios
         .get(`${api.url}account`,
-        { headers: {"Authorization" : `Bearer ${api.token}`} }
+        { headers: {"Authorization" : `Bearer ${token}`} }
           )
         .then((response) => {
           setUser(response.data);
@@ -86,24 +89,26 @@ export default function GenerateNdr(props) {
 
  const  generateAction = () => {
    setProcessing(true)
-   toggle();
-   console.log(checked)
-   let FacilityIDArray = [];
+   setModal(true)
+   let FacilityIDArray = "";
   //LOOPING THROUGH THE FACILITIES OBJECT ARRAY TO FORM THE NEW OBJECT 
    checked.forEach(function(value) {
     const id = value.organisationUnitId
-    FacilityIDArray.push(id);
+    const facilityparam= "facilityIds="+id
+    FacilityIDArray=facilityparam
+    //FacilityIDArray.push(id);
        
    });
-   console.log(FacilityIDArray)
-   facilitiesApi['facilities'] = FacilityIDArray;
-   //SENDING A POST REQUEST 
-   axios.post(`${api.url}ndr/generate`, facilitiesApi,
-              { headers: {"Authorization" : `Bearer ${api.token}`} }
+    //console.log(FacilityIDArray)
+    facilitiesApi['facilities'] = FacilityIDArray;
+    //SENDING A POST REQUEST 
+    axios.get(`${api.url}ndr/generate?${FacilityIDArray}`,
+                { headers: {"Authorization" : `Bearer ${token}`} }
               )
             .then(response => {
               toast.success(" Generating NDR Successful!");
-              props.history.push("/generate", { state: 'download'});
+              setModal(false)
+              //props.history.push("/generate", { state: 'download'});
             })
             .catch(error => {
               setModal(false)
@@ -195,8 +200,8 @@ export default function GenerateNdr(props) {
         </List>
        
         </>
-       
-           
+        
+        
       </CardBody>
     </Card>
     <Modal isOpen={modal} toggle={toggle} backdrop={false} fade={true} style={{marginTop:"250px"}} >

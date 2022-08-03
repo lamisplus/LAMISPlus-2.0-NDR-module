@@ -72,12 +72,12 @@ export default function DownloadNdr() {
  ///GET LIST OF FACILITIES
  async function generatedNdrList() {
   axios
-      .get(`${api.url}ndr/download`,
+      .get(`${api.url}ndr/files`,
         { headers: {"Authorization" : `Bearer ${api.token}`} }
         )
       .then((response) => {
-        setGeneratedNdrList(response.data.fileInfos);
-        console.log(response.data.fileInfos);
+        setGeneratedNdrList(response.data);
+        console.log(response.data);
        
          })
       .catch((error) => {
@@ -115,12 +115,13 @@ export default function DownloadNdr() {
                 },
             ]}
             isLoading={loading}
-            data={[].map((row) => ({
-                name: row.name,
-                files:row.numberRecords,
-                date: row.dateGenerated,             
-                actions:  
-                        <Link to={row.url+"/"+row.name} target="_blank" download>
+            data={generatedNdrListed.map((row) => ({
+                name:row.facility,
+                files:row.files,
+                date:row.lastModified,             
+                actions: 
+                //to={row.url+"/"+row.name} 
+                        <Link to={api.url+"/"+"download"+row.fileName}  target="_blank" download>
                           <Tooltip title="Download">
                               <IconButton aria-label="Download" >
                                   <CloudDownloadIcon color="primary"/>
