@@ -319,7 +319,7 @@ public class XMLTestService {
         String datimCode = messageHeaderTypeMapper.getDatimCode (facilityId).orElse ("");
         String fileName = StringUtils.leftPad (state, 2, "0") +
                 StringUtils.leftPad (lga, 3, "0") + "_" + datimCode +
-                "_" + facility.getName () + "_" + dateFormat.format (new Date ()) + ".zip";
+                "_" + facility.getName () + "_" + dateFormat.format (new Date ());
         fileName = RegExUtils.replaceAll (fileName, "/", "-");
 
         try {

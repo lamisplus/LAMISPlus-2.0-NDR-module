@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { forwardRef } from 'react';
 import { FiUploadCloud } from "react-icons/fi";
 import {  Modal, ModalBody, ModalHeader } from 'reactstrap';
+import FileSaver from "file-saver";
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -93,6 +94,23 @@ export default function DownloadNdr() {
 
 }
 
+  const downloadFile = (fileName)=>{
+    console.log("code is here ")
+        axios
+        .get(`${api.url}ndr/download/${fileName}`,
+          { headers: {"Authorization" : `Bearer ${api.token}`} }
+          )
+        .then((response) => {
+          const  responseData=response
+          let blob = new Blob([response], {
+            type: "application/octet-stream"
+          });
+          const newName= FileSaver.saveAs(blob, `${fileName}.zip`);
+        
+          })
+        .catch((error) => {
+        });
+  }
 
 
 
@@ -125,6 +143,7 @@ export default function DownloadNdr() {
                   field: "files",
                   filtering: false
                 },
+                { title: "File Name", field: "fileName", filtering: false}, 
                 { title: "Date Last Generated", field: "date", type: "date" , filtering: false},          
 
                 {
@@ -137,16 +156,15 @@ export default function DownloadNdr() {
             data={generatedNdrListed.map((row) => ({
                 name:row.facility,
                 files:row.files,
+                fileName:row.fileName,
                 date:row.lastModified,             
                 actions: 
-                //to={row.url+"/"+row.name} 
-                        <Link to={"download/"+row.fileName}  target="_blank" download>
-                          <Tooltip title="Download">
+
+                          <Tooltip title="Download" onClick={()=>downloadFile(row.fileName)}>
                               <IconButton aria-label="Download" >
                                   <CloudDownloadIcon color="primary"/>
                               </IconButton>
                           </Tooltip>
-                          </Link>
 
             }))}
             options={{
