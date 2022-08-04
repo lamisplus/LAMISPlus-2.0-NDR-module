@@ -44,7 +44,6 @@ export default function GenerateNdr(props) {
   const [checked, setChecked] = React.useState([]);  
   const [user, setUser] = useState(null);
   const [modal, setModal] = useState(false);
-
   const toggle = () => setModal(!modal);
 
   useEffect(() => {
@@ -106,8 +105,11 @@ export default function GenerateNdr(props) {
                 { headers: {"Authorization" : `Bearer ${token}`} }
               )
             .then(response => {
-              toast.success(" Generating NDR Successful!");
-              setModal(false)
+              window.setTimeout(() => {
+                toast.success(" Generating NDR Successful!");
+                setModal(false)
+              }, 5000);
+              
               //props.history.push("/generate", { state: 'download'});
             })
             .catch(error => {
@@ -204,10 +206,10 @@ export default function GenerateNdr(props) {
         
       </CardBody>
     </Card>
-    <Modal isOpen={modal} toggle={toggle} backdrop={false} fade={true} style={{marginTop:"250px"}} >
+    <Modal isOpen={modal} toggle={toggle} backdrop={false} fade={true} style={{marginTop:"250px"}} size='lg'>
         
         <ModalBody>
-         <h2>Generating NDR Please wait...</h2>
+         <h2>Generating NDR File. Please wait...</h2>
         </ModalBody>
         
       </Modal> 

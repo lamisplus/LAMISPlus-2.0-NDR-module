@@ -9,6 +9,8 @@ import IconButton from '@material-ui/core/IconButton';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Link } from "react-router-dom";
 import { forwardRef } from 'react';
+import { FiUploadCloud } from "react-icons/fi";
+import {  Modal, ModalBody, ModalHeader } from 'reactstrap';
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -25,7 +27,7 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-
+import Button from '@material-ui/core/Button';
 const tableIcons = {
 Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
 Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -59,15 +61,20 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function DownloadNdr() {
-  const classes = useStyles();
-  
+  const classes = useStyles();  
   const [generatedNdrListed, setGeneratedNdrList] = useState( [])
   const [loading, setLoading] = useState('')
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
 
   useEffect(() => {
     generatedNdrList()
   }, []);
 
+  //Load NDR WEB in the modal\
+  const loadNdrWeb = () =>{
+    toggle()
+  }
 
  ///GET LIST OF FACILITIES
  async function generatedNdrList() {
@@ -76,6 +83,7 @@ export default function DownloadNdr() {
         { headers: {"Authorization" : `Bearer ${api.token}`} }
         )
       .then((response) => {
+        console.log(response.data)
         setGeneratedNdrList(response.data);
         console.log(response.data);
        
@@ -90,11 +98,22 @@ export default function DownloadNdr() {
 
 
   return (
-    <div >     
-      <Card>
-      
-        <CardBody> 
-                   
+    <div >      
+          
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className=" float-right"
+                    startIcon={<FiUploadCloud size="10"/>}
+                    style={{backgroundColor:'#014d88'}}
+                    href="https://ndr.phis3project.org.ng/Identity/Account/Login?ReturnUrl=%2F"
+                    //onClick={loadNdrWeb}
+                    target="_blank"
+                >
+                    <span >Upload to NDR</span>
+                </Button>
+           
+                <br/><br/>      
             <MaterialTable
             icons={tableIcons}
             title="List of Filies Generated"
@@ -121,7 +140,7 @@ export default function DownloadNdr() {
                 date:row.lastModified,             
                 actions: 
                 //to={row.url+"/"+row.name} 
-                        <Link to={api.url+"/"+"download"+row.fileName}  target="_blank" download>
+                        <Link to={"download/"+row.fileName}  target="_blank" download>
                           <Tooltip title="Download">
                               <IconButton aria-label="Download" >
                                   <CloudDownloadIcon color="primary"/>
@@ -143,15 +162,24 @@ export default function DownloadNdr() {
                     width : '300%',
                     margingLeft: '250px',
                 },
-                exportButton: true,
+                exportButton: false,
                 searchFieldAlignment: 'left',          
             }}
 
         />      
-            
-      </CardBody>
-    </Card>
-       
+    
+      <Modal isOpen={modal} toggle={toggle} backdrop={false} fade={true} size="xl" style={{marginTop:"50px"}}>
+          <ModalHeader toggle={toggle}></ModalHeader>
+          <ModalBody>
+          <iframe  style={{width:"100%", height:"100%", border:"none", margin:0, padding:0}} src="https://ndr.phis3project.org.ng/Identity/Account/Login?ReturnUrl=%2F" ></iframe> 
+          <embed src="https://ndr.phis3project.org.ng/"
+            width="100%"
+            height="1000"
+            onerror="alert('URL invalid !!');"
+          />
+          </ModalBody>
+          
+        </Modal> 
   </div>
     
   );
