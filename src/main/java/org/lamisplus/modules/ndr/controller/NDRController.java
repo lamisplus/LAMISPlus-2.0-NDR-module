@@ -3,7 +3,7 @@ package org.lamisplus.modules.ndr.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lamisplus.modules.ndr.domain.dto.NdrXmlStatusDto;
-import org.lamisplus.modules.ndr.service.XMLTestService;
+import org.lamisplus.modules.ndr.service.NDRService;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("api/v1/ndr")
 @RequiredArgsConstructor
 public class NDRController {
-    private final XMLTestService xmlTestService;
+    private final NDRService xmlTestService;
 
     private final SimpMessageSendingOperations messagingTemplate;
 

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lamisplus.modules.base.domain.entities.OrganisationUnit;
 import org.lamisplus.modules.base.service.OrganisationUnitService;
 import org.lamisplus.modules.ndr.schema.FacilityType;
+import org.lamisplus.modules.ndr.schema.FingerPrintType;
 import org.lamisplus.modules.ndr.schema.PatientDemographicsType;
 import org.lamisplus.modules.ndr.service.NDRCodeSetResolverService;
 import org.lamisplus.modules.ndr.utility.DateUtil;
@@ -31,6 +32,8 @@ public class PatientDemographicsMapper {
     private final OrganisationUnitService organisationUnitService;
 
     private  final NDRCodeSetResolverService ndrCodeSetResolverService;
+
+    private  final  BiometricTemplateMapper biometricTemplateMapper;
     private  final  String DISPLAY = "display";
     public PatientDemographicsType getPatientDemographics(Long patientId) {
 
@@ -44,11 +47,15 @@ public class PatientDemographicsMapper {
                 patientDemographics.setPatientIdentifier (identifier);
                 patientDemographics.setTreatmentFacility (treatmentFacility);
                 processAndSetDateOFBirth (patientDemographics, person.getDateOfBirth ());
-                processAndSetSex (patientDemographics, person.getGender ());
+                processAndSetSex (patientDemographics, person.getSex ());
                 processAndSetEducationLevelCode (patientDemographics, person.getEducation ());
                 processAndSetMaritalStatusCode (patientDemographics, person.getMaritalStatus ());
                 processAndSetStateOfOrigin(patientDemographics, person.getAddress ());
                 processAndSetOccupationalStatusCode(patientDemographics, person.getEmploymentStatus ());
+                FingerPrintType fingerPrintTypeForPatient = biometricTemplateMapper.getFingerPrintTypeForPatient (person.getUuid ());
+                if(fingerPrintTypeForPatient != null){
+                patientDemographics.setFingerPrints (fingerPrintTypeForPatient);
+                }
                 return patientDemographics;
             } catch (Exception e) {
                e.printStackTrace ();
@@ -64,12 +71,10 @@ public class PatientDemographicsMapper {
         }
     }
 
-    private void processAndSetSex(PatientDemographicsType patientDemographics, JsonNode gender) {
-        if (gender.hasNonNull (DISPLAY)) {
-            String sex = gender.get (DISPLAY).asText ();
+    private void processAndSetSex(PatientDemographicsType patientDemographics, String sex) {
             Optional<String> sexCode = ndrCodeSetResolverService.getNDRCodeSetCode ("SEX", sex);
             sexCode.ifPresent (patientDemographics::setPatientSexCode);
-        }
+
     }
 
 
