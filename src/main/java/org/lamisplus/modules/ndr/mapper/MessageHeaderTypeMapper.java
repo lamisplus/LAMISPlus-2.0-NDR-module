@@ -62,7 +62,7 @@ public class MessageHeaderTypeMapper {
         OrganisationUnit ndrFacility = organisationUnitService.getOrganizationUnit (facilityId);
         return ndrFacility.getOrganisationUnitIdentifiers ()
                 .stream ()
-                .filter (identifier -> identifier.getName ().equalsIgnoreCase ("DATIM_CODE"))
+                .filter (identifier -> identifier.getName ().equalsIgnoreCase ("DATIM_ID"))
                 .map (OrganisationUnitIdentifier::getCode)
                 .findFirst ();
     }
