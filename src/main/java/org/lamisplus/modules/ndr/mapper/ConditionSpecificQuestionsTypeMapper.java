@@ -55,13 +55,16 @@ public class ConditionSpecificQuestionsTypeMapper {
         try {
             Optional<Person> personOptional = personRepository.findById (patientId);
             ConditionSpecificQuestionsType disease = new ConditionSpecificQuestionsType ();
+            LOG.info("specific questions start {}", personOptional.isPresent());
             personOptional.ifPresent (person -> {
                 HIVQuestionsType hiv = new HIVQuestionsType ();
                 LocalDate dateOfBirth = person.getDateOfBirth ();
                 int age = Period.between (dateOfBirth, LocalDate.now ()).getYears ();
                 Optional<HivEnrollment> hivEnrollmentOptional = hivEnrollmentRepository.getHivEnrollmentByPersonAndArchived (person, 0);
+                LOG.info("specific questions HivEnrollment {}", hivEnrollmentOptional.isPresent());
                 hivEnrollmentOptional.ifPresent (
                         hivEnrollment -> {
+                            LOG.info("specific questions HivEnrollment  2 {}",hivEnrollment);
                             processAndSetDateOfRegistration (hiv, hivEnrollment);
                             processAndSetCareEntryPoint (hiv, hivEnrollment);
                             ApplicationCodesetDTO statusRegistration =
@@ -87,6 +90,7 @@ public class ConditionSpecificQuestionsTypeMapper {
                     Optional<Regimen> regimenOptional = regimenRepository.findById (regimenId);
                     regimenOptional.ifPresent (regimen -> {
                         String ndrRegimen = StringUtils.trim (regimen.getComposition ()) + "_" + regimen.getRegimenType ().getId ();
+                        System.out.println("ndrRegimen: " + ndrRegimen);
                         Optional<CodedSimpleType> simpleCodeSet = ndrCodeSetResolverService.getSimpleCodeSet (ndrRegimen);
                         simpleCodeSet.ifPresent (hiv::setFirstARTRegimen);
                     });
@@ -287,7 +291,7 @@ public class ConditionSpecificQuestionsTypeMapper {
         } catch (DatatypeConfigurationException e) {
             e.printStackTrace ();
         }
-        if (! eligible.isEmpty ()) hiv.setReasonMedicallyEligible (eligible);
+        if (eligible != null && ! eligible.isEmpty ()) hiv.setReasonMedicallyEligible (eligible);
     }
 
 
