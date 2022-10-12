@@ -103,8 +103,10 @@ public class EncountersTypeMapper {
                             .filter (regimen -> regimenTypeIds.contains (regimen.getRegimenType ().getId ()))
                             .forEach (regimen -> {
                                 LOG.info ("ndrRegimenSystemDescription {}", regimen.getDescription ());
+                               
                                 Optional<CodedSimpleType> ndrCodeSet = ndrCodeSetResolverService.getRegimen (regimen.getDescription ());
                                 if (ndrCodeSet.isPresent ()) {
+                                    System.out.println("ndr "+ndrCodeSet.get().getCodeDescTxt());
                                     ndrCodeSet.ifPresent (hivEncounterType::setARVDrugRegimen);
                                 } else {
                                     RegimenType regimenType = regimen.getRegimenType ();

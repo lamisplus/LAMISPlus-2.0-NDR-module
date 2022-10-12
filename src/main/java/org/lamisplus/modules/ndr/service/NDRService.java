@@ -269,10 +269,11 @@ public class NDRService {
         List<NDRStatus> ndrStatusList = artPatientIds.stream ().map (patientId -> shouldPrintPatientContainerXml (patientId, facilityId))
                 .collect (Collectors.toList ());
 
-        int filesSize = ndrStatusList
-                .stream ()
-                .map (ndrStatus -> new NdrMessageLog (ndrStatus.identifier, ndrStatus.getFile (), LocalDateTime.now ()))
-                .map (ndrMessageLogRepository::save).collect (Collectors.toList ()).size ();
+        int filesSize = (int) ndrStatusList
+                .stream()
+                .filter(Objects::nonNull)
+                .map(ndrStatus -> new NdrMessageLog(ndrStatus.identifier, ndrStatus.getFile(), LocalDateTime.now()))
+                .map(ndrMessageLogRepository::save).count();
 
         String fileName = zipFiles (facilityId);
         NdrXmlStatus ndrXmlStatus = new NdrXmlStatus ();

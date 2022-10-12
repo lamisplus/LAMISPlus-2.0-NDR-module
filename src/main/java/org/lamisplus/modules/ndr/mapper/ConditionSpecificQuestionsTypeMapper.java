@@ -185,7 +185,7 @@ public class ConditionSpecificQuestionsTypeMapper {
     private void processAndHandleARTStatus(HIVQuestionsType hiv, Long personId, String enrollmentStatus) {
         try {
             String ndrARTStatus = enrollmentStatus == null ? "Pre-ART" : "ART";
-            String status = hivStatusTrackerService.getPersonCurrentHIVStatusByPersonId (personId);
+            String status = hivStatusTrackerService.getPersonCurrentHIVStatusByPersonId (personId).getStatus();
             handlePatientTransferOut (hiv, personId, ndrARTStatus, status);
             handlePatientDeathStatus (hiv, personId, ndrARTStatus, status);
         } catch (Exception e) {
